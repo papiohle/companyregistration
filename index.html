@@ -602,40 +602,6 @@
             </div>
         </div>
 
-
-         <h1>Upload Director Documents</h1>
-  <form action="/upload" method="POST" enctype="multipart/form-data">
-    <!-- Repeat for each director -->
-    <fieldset>
-      <legend>Director 1</legend>
-      <label>ID Copy: 
-        <input type="file" name="director1_id">
-      </label><br>
-      <label>Proof of Residence: 
-        <input type="file" name="director1_proof">
-      </label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Director 2</legend>
-      <label>ID Copy: 
-        <input type="file" name="director2_id">
-      </label><br>
-      <label>Proof of Residence: 
-        <input type="file" name="director2_proof">
-      </label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Director 3</legend>
-      <label>ID Copy: 
-        <input type="file" name="director3_id">
-      </label><br>
-      <label>Proof of Residence: 
-        <input type="file" name="director3_proof">
-      </label>
-    </fieldset>
-
         <!-- Company Information -->
         <div class="bg-white rounded-lg shadow border-l-4 border-l-blue-500">
             <div class="p-6 border-b">
@@ -685,56 +651,51 @@
                 </div>
 
                 <!-- Company Logo Section -->
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center text-sm font-medium text-gray-700">
-                            <i class="fas fa-image mr-1"></i>
-                            Company Logo
-                        </label>
-                        <div class="flex items-center space-x-2">
-                            <input type="checkbox" id="needsLogo" name="needsLogo" class="rounded text-blue-600">
-                            <label for="needsLogo" class="text-sm text-orange-600 cursor-pointer">
-                                I need help creating a logo 🎨
-                            </label>
-                        </div>
-                    </div>
+        <div class="space-y-4">
+    <div class="flex items-center justify-between">
+        <label class="flex items-center text-sm font-medium text-gray-700">
+            <i class="fas fa-image mr-1"></i>
+            Company Logo
+        </label>
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" id="needsLogo" name="needsLogo" class="rounded text-blue-600">
+            <label for="needsLogo" class="text-sm text-orange-600 cursor-pointer">
+                I need help creating a logo 🎨
+            </label>
+        </div>
+    </div>
 
-                    <div class="upload-area company">
-                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
-                        <label for="companyLogo" class="cursor-pointer">
-                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
-                            <p class="text-sm text-gray-600 mb-2 upload-text">Click to upload company logo</p>
-                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-                        </label>
+    <!-- Company Logo Upload -->
+    <div class="upload-area company">
+        <input type="file" id="companyLogoUpload" name="companyLogo" accept="image/*,application/pdf" class="hidden">
+        <label for="companyLogoUpload" class="cursor-pointer">
+            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+            <p class="text-sm text-gray-600 mb-2 upload-text">Click to upload company logo</p>
+            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+        </label>
+    </div>
 
-                            <div class="upload-area company">
-                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
-                        <label for="companyLogo" class="cursor-pointer">
-                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
-                            <p class="text-sm text-gray-600 mb-2 upload-text">Director 1 - ID Copy</p>
-                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-                        </label>
-                    </div>
+    <!-- Director 1 - ID Copy -->
+    <div class="upload-area company">
+        <input type="file" id="directorIDUpload" name="directorID" accept="image/*,application/pdf" class="hidden">
+        <label for="directorIDUpload" class="cursor-pointer">
+            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+            <p class="text-sm text-gray-600 mb-2 upload-text">Director 1 - ID Copy</p>
+            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+        </label>
+    </div>
 
-                        <div class="upload-area company">
-                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
-                        <label for="companyLogo" class="cursor-pointer">
-                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
-                            <p class="text-sm text-gray-600 mb-2 upload-text">Director 1 - Proof of Residence</p>
-                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-                        </label>
-                    </div>
+    <!-- Director 1 - Proof of Residence -->
+    <div class="upload-area company">
+        <input type="file" id="directorProofUpload" name="directorProof" accept="image/*,application/pdf" class="hidden">
+        <label for="directorProofUpload" class="cursor-pointer">
+            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+            <p class="text-sm text-gray-600 mb-2 upload-text">Director 1 - Proof of Residence</p>
+            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+        </label>
+    </div>
+</div>
 
-                        <div class="upload-area company">
-                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
-                        <label for="companyLogo" class="cursor-pointer">
-                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
-                            <p class="text-sm text-gray-600 mb-2 upload-text">Click to upload company logo</p>
-                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
-                        </label>
-                    </div>
-                    </div>
-                </div>
 
                 <!-- Company Contact Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
