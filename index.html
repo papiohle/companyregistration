@@ -539,7 +539,7 @@
     </form>
 
     <form id="registrationForm" name="company-registration" method="POST" action="/success.html" data-netlify="true" data-netlify-honeypot="bot-field" enctype="multipart/form-data" class="space-y-8">
-        <!-- Honeypot field for spam protection -->
+        <input type="hidden" name="form-name" value="company-registration">
         <p class="hidden">
             <label>Don't fill this out if you're human: <input name="bot-field" /></label>
         </p>
@@ -550,7 +550,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="flex items-center">
-                            <h2 class="text-xl font-bold text-gray-900">Directors Information</h2>
+                            <h2 class="text-xl font-bold text-gray-900">Directors Information 1</h2>
                             <span class="ml-2">👥</span>
                         </div>
                         <p class="text-sm text-gray-600 mt-1">Add information for all company directors (minimum 1 required)</p>
