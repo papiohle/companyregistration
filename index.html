@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Registration Form - CIPC South Africa</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4 pb-24">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen">
+        <div class="fireworks-container"></div>
+        <div class="welcome-content">
+            <div class="mb-8">
+                <div class="text-yellow-400 animate-pulse mb-4">
+                    <i class="fas fa-sparkles text-6xl"></i>
+                </div>
+                <h1 class="welcome-title">Welcome! 🎉</h1>
+                <p class="welcome-subtitle">This is the beginning of great things ✨</p>
+            </div>
+
+            <div class="emoji-container">
+                <span>👨‍💼</span>
+                <span>👩‍💼</span>
+                <span>🤝</span>
+                <span>💼</span>
+                <span>🎯</span>
+            </div>
+
+            <div class="loading-text">
+                <span class="loading-emoji">🎆</span>
+                <span class="mx-4 text-xl">Getting ready for you...</span>
+                <span class="loading-emoji">🎇</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-btn">
+        <a href="https://wa.me/27730000822" target="_blank" rel="noopener noreferrer" 
+           class="bg-green-500 hover:bg-green-600 text-white" aria-label="Contact us on WhatsApp">
+            <i class="fas fa-comment text-xl"></i>
+            <div class="tooltip">Chat on WhatsApp</div>
+            <div class="pulse bg-green-500"></div>
+        </a>
+
+        <a href="mailto:info@papi.agency" class="bg-blue-500 hover:bg-blue-600 text-white" aria-label="Send us an email">
+            <i class="fas fa-envelope text-xl"></i>
+            <div class="tooltip">Send Email</div>
+            <div class="pulse bg-blue-500"></div>
+        </a>
+    </div>
+
+    <div id="mainContent" class="max-w-4xl mx-auto hidden">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-building text-blue-600 text-4xl mr-3"></i>
+                <h1 class="text-3xl font-bold text-gray-900">Company Registration Form</h1>
+                <span class="ml-2 text-2xl">🏢</span>
+            </div>
+            <p class="text-lg text-gray-600">CIPC South Africa - Companies and Intellectual Property Commission 🇿🇦</p>
+
+            <div class="mt-4 p-4 bg-white rounded-lg shadow-sm border">
+                <div class="flex flex-wrap items-center justify-center gap-2 text-sm text-gray-600">
+                    <span>Need help?</span>
+                    <span>👨‍💼</span>
+                    <span>Our team is here to assist you</span>
+                    <span>👩‍💼</span>
+                    <span>📞 Support: 0800-123-456</span>
+                    <span>💬</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white rounded-lg shadow mb-8 p-6">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Registration Progress</span>
+                <span class="text-sm text-gray-500"><span class="progress-percentage">0%</span> Complete</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                <span>Company Info</span>
+                <span>Directors</span>
+                <span>Complete 🎯</span>
+            </div>
+        </div>
+
+        <!-- Quotation Summary -->
+        <div id="quotationCard" class="bg-green-50 border-l-4 border-l-green-500 rounded-lg shadow mb-8 p-6 hidden">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-calculator text-green-600 text-xl mr-2"></i>
+                    <span class="text-lg font-semibold text-green-800">Additional Services Quotation</span>
+                </div>
+                <div class="text-2xl font-bold text-green-600 quotation-amount">R0 💰</div>
+            </div>
+            <div class="mt-2 text-sm text-green-700">
+                Selected services will be quoted separately and invoiced upon approval.
+            </div>
+        </div>
+
+        <!-- Hidden Netlify Form for Detection -->
+        <form name="company-registration" netlify netlify-honeypot="bot-field" hidden>
+            <input type="text" name="companyName" />
+            <input type="text" name="companyType" />
+            <input type="text" name="registrationNumber" />
+            <input type="text" name="registeredAddress" />
+            <input type="text" name="companyWebsite" />
+            <input type="email" name="companyEmail" />
+            <input type="tel" name="companyPhone" />
+            <input type="file" name="companyLogo" />
+            <input type="checkbox" name="needsLogo" />
+            <input type="text" name="additionalServices" />
+            <input type="text" name="totalQuotation" />
+            <input type="text" name="submissionDate" />
+            <input type="text" name="numberOfDirectors" />
+            <input type="text" name="directorsData" />
+            <input type="checkbox" name="accountingReporting" />
+            <input type="checkbox" name="accountingSoftware" />
+            <input type="checkbox" name="businessBanking" />
+            <input type="checkbox" name="websiteEmailDev" />
+        </form>
+
+        <!-- Main Registration Form -->
+        <form id="registrationForm" name="company-registration" method="POST" action="/success.html" 
+              data-netlify="true" data-netlify-honeypot="bot-field" enctype="multipart/form-data" class="space-y-8">
+            
+            <input type="hidden" name="form-name" value="company-registration">
+            <p class="hidden">
+                <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+            </p>
+
+            <!-- Directors Section -->
+            <div class="bg-white rounded-lg shadow border-l-4 border-l-purple-500">
+                <div class="p-6 border-b">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center">
+                                <h2 class="text-xl font-bold text-gray-900">Directors Information</h2>
+                                <span class="ml-2">👥</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Add information for all company directors (minimum 1 required)</p>
+                        </div>
+                        <button type="button" id="addDirectorBtn" 
+                                class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 
+                                       px-4 py-2 rounded-md flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Add Director 👨‍💼
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="directorsContainer">
+                        <div class="no-directors text-center py-8 text-gray-500">
+                            <i class="fas fa-building text-5xl text-gray-300 mb-4"></i>
+                            <p>No directors added yet. Click "Add Director" to get started! 🚀</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Information -->
+            <div class="bg-white rounded-lg shadow border-l-4 border-l-blue-500">
+                <div class="p-6 border-b">
+                    <div class="flex items-center">
+                        <i class="fas fa-building text-lg mr-2"></i>
+                        <h2 class="text-xl font-bold text-gray-900">Company Information</h2>
+                        <span class="ml-2">🏢</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">Provide the basic information about your company</p>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="companyName" class="block text-sm font-medium text-gray-700">Company Name *</label>
+                            <input type="text" id="companyName" name="companyName" placeholder="Enter company name" 
+                                   class="company-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="companyType" class="block text-sm font-medium text-gray-700">Company Type *</label>
+                            <select id="companyType" name="companyType" 
+                                    class="company-field w-full px-3 py-2 border rounded-md" required>
+                                <option value="" disabled selected>-- Select Type --</option>
+                                <option value="private">Private Company (Pty) Ltd</option>
+                                <option value="nonProfit">Non-Profit Company (NPC)</option>
+                                <option value="public">Public Company (Ltd)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="registrationNumber" class="block text-sm font-medium text-gray-700">
+                            Proposed Company Registration Number (optional)
+                        </label>
+                        <input type="text" id="registrationNumber" name="registrationNumber" 
+                               placeholder="Enter proposed registration number if any" 
+                               class="company-field w-full px-3 py-2 border rounded-md">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="registeredAddress" class="block text-sm font-medium text-gray-700">
+                            Registered Address *
+                        </label>
+                        <input type="text" id="registeredAddress" name="registeredAddress" 
+                               placeholder="Enter complete registered address" 
+                               class="company-field w-full px-3 py-2 border rounded-md" required>
+                    </div>
+
+                    <!-- Company Logo Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-image mr-1"></i>
+                                Company Logo
+                            </label>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="needsLogo" name="needsLogo" class="rounded text-blue-600">
+                                <label for="needsLogo" class="text-sm text-orange-600 cursor-pointer">
+                                    I need help creating a logo 🎨
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="upload-area company">
+                            <input type="file" id="companyLogo" name="companyLogo" 
+                                   accept=".pdf,.jpg,.jpeg,.png,.gif" class="hidden">
+                            <label for="companyLogo" class="cursor-pointer">
+                                <i class="fas fa-upload text-4xl text-blue-400 mb-2 block upload-icon"></i>
+                                <p class="text-sm text-gray-600 mb-1 upload-text">Upload Company Logo</p>
+                                <p class="text-xs text-gray-400">PDF, JPG, PNG, GIF up to 10MB</p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Company Contact Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="companyEmail" class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-envelope mr-1"></i>
+                                Company Email *
+                            </label>
+                            <input type="email" id="companyEmail" name="companyEmail" 
+                                   placeholder="company@example.com" 
+                                   class="company-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="companyPhone" class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-phone mr-1"></i>
+                                Company Contact Number *
+                            </label>
+                            <input type="tel" id="companyPhone" name="companyPhone" 
+                                   placeholder="+27 11 123 4567" 
+                                   class="company-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+                    </div>
+
+                    <!-- Company Website Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label for="companyWebsite" class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-globe mr-1"></i>
+                                Company Website
+                            </label>
+                            <button type="button" id="websiteHelperBtn"
+                                    class="bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 
+                                           px-3 py-1 rounded-md text-sm">
+                                <i class="fas fa-globe mr-2"></i>
+                                Need a website? 🌐
+                            </button>
+                        </div>
+
+                        <input type="url" id="companyWebsite" name="companyWebsite" 
+                               placeholder="https://www.yourcompany.com" 
+                               class="company-field w-full px-3 py-2 border rounded-md">
+
+                        <div id="websiteHelper" class="p-4 bg-green-50 border border-green-200 rounded-lg hidden">
+                            <h4 class="font-semibold text-green-800 mb-2">🚀 Need a Professional Website?</h4>
+                            <p class="text-green-700 text-sm mb-3">
+                                We can help you create a professional website for your new company! Our web development partners offer:
+                            </p>
+                            <ul class="text-green-700 text-sm space-y-1 mb-3">
+                                <li>• 📱 Mobile-responsive design</li>
+                                <li>• 🎨 Professional templates</li>
+                                <li>• 🔒 SSL certificates included</li>
+                                <li>• 📧 Business email setup</li>
+                                <li>• 📈 SEO optimization</li>
+                            </ul>
+                            <div class="flex space-x-2">
+                                <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                                    Get Quote 💼
+                                </button>
+                                <button type="button" id="closeWebsiteHelper" 
+                                        class="bg-white border border-gray-300 hover:bg-gray-50 px-3 py-1 rounded-md text-sm">
+                                    Maybe Later
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Services Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-sparkles text-purple-600 mr-2"></i>
+                            <h3 class="text-lg font-semibold text-gray-900">Additional Services 🚀</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">Select any additional services you need for your business:</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="servicesContainer">
+                            <!-- Services will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden fields for Netlify -->
+            <input type="hidden" name="totalQuotation" id="totalQuotationInput" value="R0">
+            <input type="hidden" name="submissionDate" id="submissionDateInput" value="">
+            <input type="hidden" name="numberOfDirectors" id="numberOfDirectorsInput" value="0">
+            <input type="hidden" name="directorsData" id="directorsDataInput" value="">
+
+            <!-- Submit Button -->
+            <div class="flex justify-center">
+                <button type="submit" 
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
+                               text-white px-8 py-3 text-lg font-semibold rounded-md shadow-lg">
+                    Submit Registration 🚀✨
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
