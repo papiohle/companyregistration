@@ -573,6 +573,40 @@
             </div>
         </div>
 
+
+         <h1>Upload Director Documents</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <!-- Repeat for each director -->
+    <fieldset>
+      <legend>Director 1</legend>
+      <label>ID Copy: 
+        <input type="file" name="director1_id">
+      </label><br>
+      <label>Proof of Residence: 
+        <input type="file" name="director1_proof">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Director 2</legend>
+      <label>ID Copy: 
+        <input type="file" name="director2_id">
+      </label><br>
+      <label>Proof of Residence: 
+        <input type="file" name="director2_proof">
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Director 3</legend>
+      <label>ID Copy: 
+        <input type="file" name="director3_id">
+      </label><br>
+      <label>Proof of Residence: 
+        <input type="file" name="director3_proof">
+      </label>
+    </fieldset>
+
         <!-- Company Information -->
         <div class="bg-white rounded-lg shadow border-l-4 border-l-blue-500">
             <div class="p-6 border-b">
