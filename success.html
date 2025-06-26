@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Quotation - PAPI AGENCY</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Image Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Success Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .slide-in {
+            animation: slideInFromTop 0.8s ease-out;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Floating Action Buttons */
+        .floating-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .floating-btn a, .floating-btn button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .floating-btn a:hover, .floating-btn button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .tooltip {
+            position: absolute;
+            right: 100%;
+            margin-right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgb(31, 41, 55);
+            color: white;
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            opacity: 0;
+            transition: opacity 300ms;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        
+        .floating-btn a:hover .tooltip, .floating-btn button:hover .tooltip {
+            opacity: 1;
+        }
+        
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgb(31, 41, 55);
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .quotation-container {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 400px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .notification-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .notification-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    
+    <!-- Success Banner -->
+    <div class="bg-green-500 text-white py-4 no-print fade-in-up">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-3">
+                <i class="fas fa-check-circle text-2xl"></i>
+                <span class="text-lg font-semibold">🎉 Registration Submitted Successfully!</span>
+                <i class="fas fa-check-circle text-2xl"></i>
+            </div>
+            <p class="mt-2 text-green-100">Your quotation is ready below. We'll contact you within 24 hours.</p>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-btn no-print">
+        <!-- Download JPG Button -->
+        <button onclick="downloadQuotationImage()" 
+                class="bg-purple-500 hover:bg-purple-600 text-white pulse-animation" 
+                aria-label="Download quotation as image">
+            <i class="fas fa-download text-xl"></i>
+            <div class="tooltip">Download JPG</div>
+        </button>
+
+        <!-- Print Button -->
+        <button onclick="window.print()" 
+                class="bg-gray-600 hover:bg-gray-700 text-white" 
+                aria-label="Print quotation">
+            <i class="fas fa-print text-xl"></i>
+            <div class="tooltip">Print Quotation</div>
+        </button>
+
+        <!-- WhatsApp Button -->
+        <a href="https://wa.me/27730000822" target="_blank" rel="noopener noreferrer" 
+           class="bg-green-500 hover:bg-green-600 text-white" aria-label="Contact us on WhatsApp">
+            <i class="fas fa-comment text-xl"></i>
+            <div class="tooltip">Chat on WhatsApp</div>
+        </a>
+
+        <!-- Email Button -->
+        <a href="mailto:info@papi.agency" class="bg-blue-500 hover:bg-blue-600 text-white" aria-label="Send us an email">
+            <i class="fas fa-envelope text-xl"></i>
+            <div class="tooltip">Send Email</div>
+        </a>
+
+        <!-- New Registration Button -->
+        <a href="/" class="bg-orange-500 hover:bg-orange-600 text-white" aria-label="Submit another registration">
+            <i class="fas fa-plus text-xl"></i>
+            <div class="tooltip">New Registration</div>
+        </a>
+    </div>
+
+    <!-- Main Quotation Container -->
+    <div class="max-w-4xl mx-auto p-4 slide-in">
+        <div id="quotationContainer" class="quotation-container bg-white rounded-lg shadow-2xl overflow-hidden">
+            <!-- Quotation Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-white p-3 rounded-lg">
+                            <i class="fas fa-building text-blue-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">PAPI AGENCY</h1>
+                            <p class="text-blue-100">Company Registration Services</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <h2 class="text-3xl font-bold">QUOTATION</h2>
+                        <p class="text-blue-100">Date: <span id="quotationDate"></span></p>
+                        <p class="text-blue-100">Quote #: <span id="quotationNumber"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quotation Content -->
+            <div class="p-8">
+                <!-- Client and Contact Details -->
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b-2 border-blue-200 pb-2">
+                            <i class="fas fa-user-tie text-blue-600 mr-2"></i>BILL TO:
+                        </h3>
+                        <div id="clientDetails" class="text-gray-700 space-y-1">
+                            <!-- Client details will be populated here -->
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 border-b-2 border-purple-200 pb-2">
+                            <i class="fas fa-address-card text-purple-600 mr-2"></i>CONTACT PERSON:
+                        </h3>
+                        <div id="contactDetails" class="text-gray-700 space-y-1">
+                            <!-- Contact details will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-list-check text-green-600 mr-3"></i>
+                        SERVICES REQUESTED:
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="border border-gray-300 px-4 py-3 text-left font-bold text-gray-900">Description</th>
+                                    <th class="border border-gray-300 px-4 py-3 text-right font-bold text-gray-900 w-32">Amount (R)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTable">
+                                <!-- Services will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Totals Section -->
+                <div class="flex justify-end mb-8">
+                    <div class="w-80">
+                        <table class="w-full">
+                            <tr class="border-b">
+                                <td class="py-2 text-right font-semibold text-gray-700">Subtotal:</td>
+                                <td class="py-2 text-right text-gray-700" id="subtotalAmount">R0.00</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="py-2 text-right font-semibold text-gray-700">VAT (15%):</td>
+                                <td class="py-2 text-right text-gray-700" id="vatAmount">R0.00</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="py-3 text-right font-bold text-lg text-gray-900">TOTAL:</td>
+                                <td class="py-3 text-right font-bold text-lg text-green-600" id="totalAmount">R0.00</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Payment Terms -->
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-bold text-yellow-800 mb-3 flex items-center">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                        PAYMENT TERMS:
+                    </h3>
+                    <div class="text-yellow-800 space-y-2">
+                        <p><strong>Payment Due: IMMEDIATELY upon acceptance</strong></p>
+                        <p>This quotation is valid for 30 days from the date issued.</p>
+                        <p>Services will commence upon receipt of payment and signed agreement.</p>
+                    </div>
+                </div>
+
+                <!-- Banking Details -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-bold text-blue-800 mb-4 flex items-center">
+                        <i class="fas fa-university text-blue-600 mr-2"></i>
+                        BANKING DETAILS:
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6 text-blue-800">
+                        <div class="space-y-2">
+                            <p><strong>Bank:</strong> Standard Bank</p>
+                            <p><strong>Account Number:</strong> 10025016871</p>
+                            <p><strong>Branch Code:</strong> 051001</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p><strong>Account Holder:</strong> PAPI AGENCY</p>
+                            <p><strong>Reference:</strong> <span id="paymentReference"></span></p>
+                            <p><strong>Account Type:</strong> Business Cheque</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="border-t-2 border-gray-200 pt-6">
+                    <div class="flex justify-between items-center">
+                        <div class="space-y-1">
+                            <p class="font-semibold text-gray-900">Contact Us:</p>
+                            <p class="text-gray-700 flex items-center"><i class="fas fa-envelope text-blue-600 mr-2"></i> info@papi.agency</p>
+                            <p class="text-gray-700 flex items-center"><i class="fas fa-phone text-green-600 mr-2"></i> +27 73 000 0822</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-600 text-sm">Thank you for choosing PAPI AGENCY</p>
+                            <p class="text-gray-500 text-xs">Your trusted partner in business registration</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps Section -->
+        <div class="mt-8 bg-white rounded-lg shadow-lg p-6 no-print fade-in-up" style="animation-delay: 0.5s;">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                <i class="fas fa-road text-blue-600 mr-3"></i>
+                What Happens Next? 🚀
+            </h2>
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="bg-green-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg mx-auto mb-3">1</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Review</h3>
+                    <p class="text-gray-600 text-sm">We review your application within 24 hours</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg mx-auto mb-3">2</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Payment</h3>
+                    <p class="text-gray-600 text-sm">Make payment using banking details above</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-purple-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg mx-auto mb-3">3</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Processing</h3>
+                    <p class="text-gray-600 text-sm">We submit to CIPC and process registration</p>
+                </div>
+                <div class="text-center">
+                    <div class="bg-orange-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg mx-auto mb-3">4</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Delivery</h3>
+                    <p class="text-gray-600 text-sm">Receive your company registration certificate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let quotationData = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuotationData();
+            generateQuotationDisplay();
+        });
+
+        function loadQuotationData() {
+            const savedData = localStorage.getItem('quotationData');
+            if (savedData) {
+                quotationData = JSON.parse(savedData);
+            } else {
+                // Fallback data if localStorage is empty
+                quotationData = {
+                    companyName: 'Sample Company',
+                    companyType: 'Private Company (Pty) Ltd',
+                    companyEmail: 'info@samplecompany.com',
+                    companyPhone: '+27 11 123 4567',
+                    companyAddress: 'Sample Address, Johannesburg',
+                    directors: [{
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        email: 'john@samplecompany.com',
+                        phone: '+27 82 123 4567'
+                    }],
+                    additionalServices: [],
+                    submissionDate: new Date().toISOString()
+                };
+                showNotification('No Data Found', 'Using sample data for display. Please submit the form again.', 'error');
+            }
+        }
+
+        function generateQuotationDisplay() {
+            if (!quotationData) return;
+
+            // Generate quote number and date
+            const quoteNumber = 'QT-' + Date.now().toString().slice(-6);
+            const currentDate = new Date(quotationData.submissionDate).toLocaleDateString('en-ZA');
+            const paymentRef = `${quotationData.companyName}_${quotationData.companyType}`.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
+
+            // Update header
+            document.getElementById('quotationDate').textContent = currentDate;
+            document.getElementById('quotationNumber').textContent = quoteNumber;
+            document.getElementById('paymentReference').textContent = paymentRef;
+
+            // Client details
+            const clientDetails = document.getElementById('clientDetails');
+            clientDetails.innerHTML = `
+                <p class="font-bold text-lg text-gray-900">${quotationData.companyName}</p>
+                <p class="text-gray-600">${quotationData.companyType}</p>
+                <p class="text-gray-600">${quotationData.companyAddress}</p>
+                <p class="text-gray-600 flex items-center mt-2"><i class="fas fa-envelope text-blue-600 mr-2"></i> ${quotationData.companyEmail}</p>
+                <p class="text-gray-600 flex items-center"><i class="fas fa-phone text-green-600 mr-2"></i> ${quotationData.companyPhone}</p>
+            `;
+
+            // Contact details
+            const firstDirector = quotationData.directors[0];
+            const contactPerson = firstDirector ? `${firstDirector.firstName} ${firstDirector.lastName}` : 'Not specified';
+            const contactEmail = firstDirector ? firstDirector.email : quotationData.companyEmail;
+            const contactPhone = firstDirector ? firstDirector.phone : quotationData.companyPhone;
+
+            const contactDetails = document.getElementById('contactDetails');
+            contactDetails.innerHTML = `
+                <p class="font-bold text-lg text-gray-900">${contactPerson}</p>
+                <p class="text-gray-600 flex items-center mt-2"><i class="fas fa-envelope text-blue-600 mr-2"></i> ${contactEmail}</p>
+                <p class="text-gray-600 flex items-center"><i class="fas fa-phone text-green-600 mr-2"></i> ${contactPhone}</p>
+            `;
+
+            // Services table
+            const servicesTable = document.getElementById('servicesTable');
+            let servicesHTML = '';
+
+            if (!quotationData.additionalServices || quotationData.additionalServices.length === 0) {
+                servicesHTML = `
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-3 text-gray-500 italic" colspan="2">
+                            <i class="fas fa-info-circle mr-2"></i>No additional services selected
+                        </td>
+                    </tr>
+                `;
+            } else {
+                quotationData.additionalServices.forEach(service => {
+                    // Extract service name from the value (format: "Service Name - R1,500")
+                    const serviceName = service.value ? service.value.split(' - R')[0] : `Service ${service.id}`;
+                    const servicePrice = service.price || 0;
+                    
+                    servicesHTML += `
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-300 px-4 py-3 text-gray-700">${serviceName}</td>
+                            <td class="border border-gray-300 px-4 py-3 text-right text-gray-700 font-semibold">R${servicePrice.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            servicesTable.innerHTML = servicesHTML;
+
+            // Calculate and update totals
+            const subtotal = quotationData.additionalServices ? 
+                quotationData.additionalServices.reduce((sum, service) => sum + (service.price || 0), 0) : 0;
+            const vatAmount = subtotal * 0.15;
+            const total = subtotal + vatAmount;
+
+            document.getElementById('subtotalAmount').textContent = `R${subtotal.toLocaleString()}`;
+            document.getElementById('vatAmount').textContent = `R${Math.round(vatAmount).toLocaleString()}`;
+            document.getElementById('totalAmount').textContent = `R${Math.round(total).toLocaleString()}`;
+        }
+
+        async function downloadQuotationImage() {
+            try {
+                showNotification('Generating Image...', 'Creating your quotation image for download...', 'success');
+
+                const element = document.getElementById('quotationContainer');
+                
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: element.offsetWidth,
+                    height: element.offsetHeight
+                });
+
+                // Convert canvas to JPG and download
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                const filename = `Quotation_${quotationData.companyName.replace(/[^a-zA-Z0-9]/g, '_')}_${document.getElementById('quotationNumber').textContent}.jpg`;
+
+                // Create download link
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = imgData;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showNotification('Download Complete!', 'Your quotation image has been downloaded successfully.', 'success');
+
+            } catch (error) {
+                console.error('Error generating image:', error);
+                showNotification('Download Error', 'There was an issue generating the image. Please try again.', 'error');
+            }
+        }
+
+        function showNotification(title, message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 0.5rem 0; font-weight: 600;">${title}</h4>
+                    <p style="margin: 0; font-size: 0.875rem;">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.25rem; opacity: 0.7;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
