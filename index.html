@@ -9,6 +9,35 @@
 <!-- Image Generation Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+
+        body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    fieldset {
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      padding: 15px;
+    }
+    legend {
+      font-weight: bold;
+    }
+    .upload-row {
+      display: flex;
+      gap: 40px;
+      margin-top: 10px;
+    }
+    .upload-row label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 500;
+    }
+    input[type="submit"] {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
     /* Custom Field Borders */
     .company-field {
         border-width: 2px;
@@ -671,12 +700,39 @@
                     </div>
 
                     <div class="upload-area company">
-                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*" class="hidden">
+                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
                         <label for="companyLogo" class="cursor-pointer">
                             <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
                             <p class="text-sm text-gray-600 mb-2 upload-text">Click to upload company logo</p>
                             <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
                         </label>
+
+                            <div class="upload-area company">
+                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
+                        <label for="companyLogo" class="cursor-pointer">
+                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+                            <p class="text-sm text-gray-600 mb-2 upload-text">Director 1 - ID Copy</p>
+                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                        </label>
+                    </div>
+
+                        <div class="upload-area company">
+                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
+                        <label for="companyLogo" class="cursor-pointer">
+                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+                            <p class="text-sm text-gray-600 mb-2 upload-text">Director 1 - Proof of Residence</p>
+                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                        </label>
+                    </div>
+
+                        <div class="upload-area company">
+                        <input type="file" id="companyLogo" name="companyLogo" accept="image/*,application/pdf" class="hidden">
+                        <label for="companyLogo" class="cursor-pointer">
+                            <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+                            <p class="text-sm text-gray-600 mb-2 upload-text">Click to upload company logo</p>
+                            <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                        </label>
+                    </div>
                     </div>
                 </div>
 
