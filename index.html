@@ -544,6 +544,35 @@
             <label>Don't fill this out if you're human: <input name="bot-field" /></label>
         </p>
 
+        <!-- Directors Section -->
+        <div class="bg-white rounded-lg shadow border-l-4 border-l-purple-500">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center">
+                            <h2 class="text-xl font-bold text-gray-900">Directors Information</h2>
+                            <span class="ml-2">👥</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">Add information for all company directors (minimum 1 required)</p>
+                    </div>
+                    <button type="button" id="addDirectorBtn" 
+                            class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 
+                                   px-4 py-2 rounded-md flex items-center">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Director 👨‍💼
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div id="directorsContainer">
+                    <div class="no-directors text-center py-8 text-gray-500">
+                        <i class="fas fa-building text-5xl text-gray-300 mb-4"></i>
+                        <p>No directors added yet. Click "Add Director" to get started! 🚀</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Company Information -->
         <div class="bg-white rounded-lg shadow border-l-4 border-l-blue-500">
             <div class="p-6 border-b">
@@ -1033,34 +1062,7 @@
             </div>
         </div>
 
-        <!-- Directors Section -->
-        <div class="bg-white rounded-lg shadow border-l-4 border-l-purple-500">
-            <div class="p-6 border-b">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="flex items-center">
-                            <h2 class="text-xl font-bold text-gray-900">Directors Information</h2>
-                            <span class="ml-2">👥</span>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-1">Add information for all company directors (minimum 1 required)</p>
-                    </div>
-                    <button type="button" id="addDirectorBtn" 
-                            class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 
-                                   px-4 py-2 rounded-md flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
-                        Add Director 👨‍💼
-                    </button>
-                </div>
-            </div>
-            <div class="p-6">
-                <div id="directorsContainer">
-                    <div class="no-directors text-center py-8 text-gray-500">
-                        <i class="fas fa-building text-5xl text-gray-300 mb-4"></i>
-                        <p>No directors added yet. Click "Add Director" to get started! 🚀</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <!-- Hidden fields for Netlify -->
         <input type="hidden" name="totalQuotation" id="totalQuotationInput" value="R0">
