@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Registration Form - CIPC South Africa</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Custom Field Borders */
+        .company-field {
+            border-width: 2px;
+            border-color: rgb(186, 230, 253);
+            transition-property: color, background-color, border-color;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+        }
+        .company-field:focus {
+            border-color: rgb(14, 165, 233);
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+            outline: none;
+        }
+
+        .director-field {
+            border-width: 2px;
+            border-color: rgb(250, 204, 21);
+            transition-property: color, background-color, border-color;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+            background: linear-gradient(135deg, #fefce8 0%, #fff7ed 100%);
+        }
+        .director-field:focus {
+            border-color: rgb(249, 115, 22);
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+            outline: none;
+        }
+
+        /* Service Selection Cards */
+        .service-card {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+            cursor: pointer;
+        }
+        .service-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .service-card.selected {
+            border-color: rgb(168, 85, 247);
+            background-color: rgb(245, 243, 255);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* File Upload Areas */
+        .upload-area {
+            border-width: 2px;
+            border-style: dashed;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition-property: color, background-color, border-color;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+        }
+        .upload-area:hover {
+            border-opacity: 0.8;
+        }
+        .upload-area.company {
+            border-color: rgb(186, 230, 253);
+        }
+        .upload-area.company:hover {
+            border-color: rgb(125, 211, 252);
+        }
+        .upload-area.director {
+            border-color: rgb(250, 204, 21);
+        }
+        .upload-area.director:hover {
+            border-color: rgb(249, 115, 22);
+        }
+
+        /* Floating Action Buttons */
+        .floating-btn {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .floating-btn a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+            position: relative;
+        }
+        .floating-btn a:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .floating-btn .tooltip {
+            position: absolute;
+            right: 100%;
+            margin-right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgb(31, 41, 55);
+            color: white;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            opacity: 0;
+            transition: opacity 300ms;
+            white-space: nowrap;
+        }
+        .floating-btn a:hover .tooltip {
+            opacity: 1;
+        }
+        .floating-btn .tooltip::after {
+            content: '';
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 4px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgb(31, 41, 55);
+        }
+        .floating-btn .pulse {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+            opacity: 0.2;
+        }
+
+        /* Fireworks Animation */
+        @keyframes firework {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+        @keyframes spark {
+            0% {
+                transform: rotate(calc(var(--i) * 45deg)) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(calc(var(--i) * 45deg)) translateY(-100px);
+                opacity: 0;
+            }
+        }
+        .firework {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: firework 2s ease-out forwards;
+        }
+        .spark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b, #eb4d4b, #6c5ce7);
+            border-radius: 50%;
+            transform-origin: top left;
+            animation: spark 2s ease-out forwards;
+        }
+
+        /* Welcome Screen Animations */
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 1s ease-out;
+        }
+        .animate-spin-slow {
+            animation: spin-slow 3s linear infinite;
+        }
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            height: 0.75rem;
+            background-color: rgb(229, 231, 235);
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgb(59, 130, 246), rgb(124, 58, 237));
+            border-radius: 0.375rem;
+            transition: width 0.5s ease-out;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Quotation card animation */
+        .quotation-card {
+            animation: slideInFromTop 0.5s ease-out;
+        }
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* File upload success states */
+        .file-uploaded {
+            border-color: rgb(74, 222, 128);
+            background-color: rgb(240, 253, 244);
+        }
+        .file-uploaded .upload-icon {
+            color: rgb(34, 197, 94);
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 400px;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .notification-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .notification-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-content h4 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+        .notification-content p {
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        .notification-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            opacity: 0.7;
+        }
+        .notification-close:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Welcome screen */
+        #welcomeScreen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1e3a8a, #4c1d95, #312e81);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            overflow: hidden;
+        }
+        .welcome-content {
+            text-align: center;
+            color: white;
+            animation: fade-in-up 1s ease-out;
+        }
+        .welcome-title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #facc15, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .welcome-subtitle {
+            font-size: 1.875rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            animation: bounce 1s infinite;
+        }
+        .emoji-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            font-size: 2.5rem;
+            animation: pulse 2s infinite;
+        }
+        .loading-text {
+            margin-top: 2rem;
+        }
+        .loading-emoji {
+            display: inline-block;
+            animation: spin-slow 3s linear infinite;
+        }
+
+        /* Hidden quotation template for PDF generation */
+        .quotation-template {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 210mm;
+            background: white;
+            padding: 20mm;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .floating-btn {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+            .floating-btn a {
+                padding: 0.75rem;
+            }
+            .welcome-title {
+                font-size: 2.5rem;
+            }
+            .welcome-subtitle {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4 pb-24">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen">
+        <div class="fireworks-container"></div>
+        <div class="welcome-content">
+            <div class="mb-8">
+                <div class="text-yellow-400 animate-pulse mb-4">
+                    <i class="fas fa-sparkles text-6xl"></i>
+                </div>
+                <h1 class="welcome-title">Welcome! 🎉</h1>
+                <p class="welcome-subtitle">This is the beginning of great things ✨</p>
+            </div>
+
+            <div class="emoji-container">
+                <span>👨‍💼</span>
+                <span>👩‍💼</span>
+                <span>🤝</span>
+                <span>💼</span>
+                <span>🎯</span>
+            </div>
+
+            <div class="loading-text">
+                <span class="loading-emoji">🎆</span>
+                <span class="mx-4 text-xl">Getting ready for you...</span>
+                <span class="loading-emoji">🎇</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Quotation Template for PDF Generation -->
+    <div id="quotationTemplate" class="quotation-template">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 3px solid #3B82F6; padding-bottom: 20px;">
+            <div>
+                <img id="companyLogoImg" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjM0I4MkY2Ii8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q0lQQzwvdGV4dD4KPC9zdmc+" alt="Company Logo" style="width: 80px; height: 80px;">
+                <h1 style="color: #3B82F6; font-size: 28px; font-weight: bold; margin: 10px 0 5px 0;">PAPI AGENCY</h1>
+                <p style="color: #666; margin: 0; font-size: 14px;">Company Registration Services</p>
+            </div>
+            <div style="text-align: right;">
+                <h2 style="color: #1F2937; font-size: 32px; font-weight: bold; margin: 0;">QUOTATION</h2>
+                <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">Date: <span id="quotationDate"></span></p>
+                <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">Quote #: <span id="quotationNumber"></span></p>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+            <div style="width: 48%;">
+                <h3 style="color: #1F2937; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #E5E7EB; padding-bottom: 5px;">BILL TO:</h3>
+                <div id="clientDetails" style="color: #374151; line-height: 1.6;">
+                    <!-- Client details will be populated here -->
+                </div>
+            </div>
+            <div style="width: 48%;">
+                <h3 style="color: #1F2937; font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #E5E7EB; padding-bottom: 5px;">CONTACT PERSON:</h3>
+                <div id="contactDetails" style="color: #374151; line-height: 1.6;">
+                    <!-- Contact details will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #1F2937; font-size: 18px; font-weight: bold; margin-bottom: 15px;">SERVICES REQUESTED:</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #F3F4F6;">
+                        <th style="border: 1px solid #D1D5DB; padding: 12px; text-align: left; font-weight: bold; color: #1F2937;">Description</th>
+                        <th style="border: 1px solid #D1D5DB; padding: 12px; text-align: right; font-weight: bold; color: #1F2937; width: 120px;">Amount (R)</th>
+                    </tr>
+                </thead>
+                <tbody id="servicesTable">
+                    <!-- Services will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+            <div style="width: 300px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px; text-align: right; font-weight: bold; color: #374151;">Subtotal:</td>
+                        <td style="padding: 8px; text-align: right; color: #374151; border-bottom: 1px solid #E5E7EB;" id="subtotalAmount">R0.00</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; text-align: right; font-weight: bold; color: #374151;">VAT (15%):</td>
+                        <td style="padding: 8px; text-align: right; color: #374151; border-bottom: 1px solid #E5E7EB;" id="vatAmount">R0.00</td>
+                    </tr>
+                    <tr style="background-color: #F3F4F6;">
+                        <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; color: #1F2937;">TOTAL:</td>
+                        <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; color: #059669;" id="totalAmount">R0.00</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style="background-color: #FEF3C7; border: 2px solid #F59E0B; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+            <h3 style="color: #92400E; font-size: 16px; font-weight: bold; margin: 0 0 10px 0;">⚡ PAYMENT TERMS:</h3>
+            <p style="color: #92400E; margin: 0; font-size: 14px; line-height: 1.5;">
+                <strong>Payment Due: IMMEDIATELY upon acceptance</strong><br>
+                This quotation is valid for 30 days from the date issued.<br>
+                Services will commence upon receipt of payment and signed agreement.
+            </p>
+        </div>
+
+        <div style="border-top: 2px solid #E5E7EB; padding-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p style="color: #374151; margin: 0; font-size: 14px;"><strong>Contact Us:</strong></p>
+                    <p style="color: #374151; margin: 5px 0; font-size: 14px;">📧 info@papi.agency</p>
+                    <p style="color: #374151; margin: 5px 0; font-size: 14px;">📱 +27 73 000 0822</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="color: #6B7280; margin: 0; font-size: 12px;">Thank you for choosing PAPI AGENCY</p>
+                    <p style="color: #6B7280; margin: 5px 0; font-size: 12px;">Your trusted partner in business registration</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="floating-btn">
+        <!-- WhatsApp Button -->
+        <a href="https://wa.me/27730000822" target="_blank" rel="noopener noreferrer" 
+           class="bg-green-500 hover:bg-green-600 text-white" aria-label="Contact us on WhatsApp">
+            <i class="fas fa-comment text-xl"></i>
+            <div class="tooltip">Chat on WhatsApp</div>
+            <div class="pulse bg-green-500"></div>
+        </a>
+
+        <!-- Email Button -->
+        <a href="mailto:info@papi.agency" class="bg-blue-500 hover:bg-blue-600 text-white" aria-label="Send us an email">
+            <i class="fas fa-envelope text-xl"></i>
+            <div class="tooltip">Send Email</div>
+            <div class="pulse bg-blue-500"></div>
+        </a>
+    </div>
+
+    <div id="mainContent" class="max-w-4xl mx-auto hidden">
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-building text-blue-600 text-4xl mr-3"></i>
+                <h1 class="text-3xl font-bold text-gray-900">Company Registration Form</h1>
+                <span class="ml-2 text-2xl">🏢</span>
+            </div>
+            <p class="text-lg text-gray-600">CIPC South Africa - Companies and Intellectual Property Commission 🇿🇦</p>
+
+            <!-- Customer Service Section -->
+            <div class="mt-4 p-4 bg-white rounded-lg shadow-sm border">
+                <div class="flex flex-wrap items-center justify-center gap-2 text-sm text-gray-600">
+                    <span>Need help?</span>
+                    <span>👨‍💼</span>
+                    <span>Our team is here to assist you</span>
+                    <span>👩‍💼</span>
+                    <span>📞 Support: 0800-123-456</span>
+                    <span>💬</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white rounded-lg shadow mb-8 p-6">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-700">Registration Progress</span>
+                <span class="text-sm text-gray-500"><span class="progress-percentage">0%</span> Complete</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-between text-xs text-gray-500 mt-2">
+                <span>Company Info</span>
+                <span>Directors</span>
+                <span>Complete 🎯</span>
+            </div>
+        </div>
+
+        <!-- Quotation Summary (initially hidden) -->
+        <div id="quotationCard" class="bg-green-50 border-l-4 border-l-green-500 rounded-lg shadow mb-8 p-6 hidden">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-calculator text-green-600 text-xl mr-2"></i>
+                    <span class="text-lg font-semibold text-green-800">Additional Services Quotation</span>
+                </div>
+                <div class="text-2xl font-bold text-green-600 quotation-amount">R0 💰</div>
+            </div>
+            <div class="mt-2 text-sm text-green-700">
+                Selected services will be quoted separately and invoiced upon approval.
+            </div>
+        </div>
+
+        <!-- Netlify Forms requires a static form for bot detection -->
+        <form name="company-registration" netlify netlify-honeypot="bot-field" hidden>
+            <input type="text" name="companyName" />
+            <input type="text" name="companyType" />
+            <input type="text" name="registrationNumber" />
+            <input type="text" name="registeredAddress" />
+            <input type="text" name="companyWebsite" />
+            <input type="email" name="companyEmail" />
+            <input type="tel" name="companyPhone" />
+            <input type="file" name="companyLogo" />
+            <input type="checkbox" name="needsLogo" />
+            <input type="text" name="additionalServices" />
+            <input type="text" name="totalQuotation" />
+            <input type="text" name="submissionDate" />
+            <input type="text" name="numberOfDirectors" />
+            <input type="text" name="directorsData" />
+            <!-- Add these to the hidden Netlify form for detection -->
+            <input type="checkbox" name="accountingReporting" />
+            <input type="checkbox" name="accountingSoftware" />
+            <input type="checkbox" name="businessBanking" />
+            <input type="checkbox" name="websiteEmailDev" />
+        </form>
+
+        <form id="registrationForm" name="company-registration" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" enctype="multipart/form-data" class="space-y-8">
+            <!-- Honeypot field for spam protection -->
+            <p class="hidden">
+                <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+            </p>
+
+            <!-- Company Information -->
+            <div class="bg-white rounded-lg shadow border-l-4 border-l-blue-500">
+                <div class="p-6 border-b">
+                    <div class="flex items-center">
+                        <i class="fas fa-building text-lg mr-2"></i>
+                        <h2 class="text-xl font-bold text-gray-900">Company Information</h2>
+                        <span class="ml-2">🏢</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">Provide the basic information about your company</p>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="companyName" class="block text-sm font-medium text-gray-700">Company Name *</label>
+                            <input type="text" id="companyName" name="companyName" placeholder="Enter company name" 
+                                   class="company-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="companyType" class="block text-sm font-medium text-gray-700">Company Type *</label>
+                            <select id="companyType" name="companyType" 
+                                    class="company-field w-full px-3 py-2 border rounded-md" required>
+                                <option value="" disabled selected>-- Select Type --</option>
+                                <option value="private">Private Company (Pty) Ltd</option>
+                                <option value="nonProfit">Non-Profit Company (NPC)</option>
+                                <option value="public">Public Company (Ltd)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="registrationNumber" class="block text-sm font-medium text-gray-700">
+                            Proposed Company Registration Number (optional)
+                        </label>
+                        <input type="text" id="registrationNumber" name="registrationNumber" 
+                               placeholder="Enter proposed registration number if any" 
+                               class="company-field w-full px-3 py-2 border rounded-md">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="registeredAddress" class="block text-sm font-medium text-gray-700">
+                            Registered Address *
+                        </label>
+                        <input type="text" id="registeredAddress" name="registeredAddress" 
+                               placeholder="Enter complete registered address" 
+                               class="company-field w-full px-3 py-2 border rounded-md" required>
+                    </div>
+
+                    <!-- Company Logo Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-image mr-1"></i>
+                                Company Logo
+                            </label>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="needsLogo" name="needsLogo" class="rounded text-blue-600">
+                                <label for="needsLogo" class="text-sm text-orange-600 cursor-pointer">
+                                    I need help creating a logo 🎨
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="upload-area company">
+                            <input type="file" id="companyLogo" name="companyLogo" accept="image/*" class="hidden">
+                            <label for="companyLogo" class="cursor-pointer">
+                                <i class="fas fa-upload text-4xl text-sky-400 mb-4 block"></i>
+                                <p class="text-sm text-gray-600 mb-2 upload-text">Click to upload company logo</p>
+                                <p class="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Company Contact Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="companyEmail" class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-envelope mr-1"></i>
+                                Company Email *
+                            </label>
+                            <input type="email" id="companyEmail" name="companyEmail" 
+                                   placeholder="company@example.com" 
+                                   class="company-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="companyPhone" class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-phone mr-1"></i>
+                                Company Contact Number *
+                            </label>
+                            <input type="tel" id="companyPhone" name="companyPhone" 
+                                   placeholder="+27 11 123 4567" 
+                                   class="company-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+                    </div>
+
+                    <!-- Company Website Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label for="companyWebsite" class="flex items-center text-sm font-medium text-gray-700">
+                                <i class="fas fa-globe mr-1"></i>
+                                Company Website
+                            </label>
+                            <button type="button" id="websiteHelperBtn"
+                                    class="bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 
+                                           px-3 py-1 rounded-md text-sm">
+                                <i class="fas fa-globe mr-2"></i>
+                                Need a website? 🌐
+                            </button>
+                        </div>
+
+                        <input type="url" id="companyWebsite" name="companyWebsite" 
+                               placeholder="https://www.yourcompany.com" 
+                               class="company-field w-full px-3 py-2 border rounded-md">
+
+                        <div id="websiteHelper" class="p-4 bg-green-50 border border-green-200 rounded-lg hidden">
+                            <h4 class="font-semibold text-green-800 mb-2">🚀 Need a Professional Website?</h4>
+                            <p class="text-green-700 text-sm mb-3">
+                                We can help you create a professional website for your new company! Our web development partners offer:
+                            </p>
+                            <ul class="text-green-700 text-sm space-y-1 mb-3">
+                                <li>• 📱 Mobile-responsive design</li>
+                                <li>• 🎨 Professional templates</li>
+                                <li>• 🔒 SSL certificates included</li>
+                                <li>• 📧 Business email setup</li>
+                                <li>• 📈 SEO optimization</li>
+                            </ul>
+                            <div class="flex space-x-2">
+                                <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm">
+                                    Get Quote 💼
+                                </button>
+                                <button type="button" id="closeWebsiteHelper" 
+                                        class="bg-white border border-gray-300 hover:bg-gray-50 px-3 py-1 rounded-md text-sm">
+                                    Maybe Later
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Services Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-sparkles text-purple-600 mr-2"></i>
+                            <h3 class="text-lg font-semibold text-gray-900">Additional Services 🚀</h3>
+                        </div>
+                        <p class="text-sm text-gray-600">Select any additional services you need for your business:</p>
+
+                        <!-- Corporate Business Solutions -->
+                        <div class="mb-6">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-briefcase text-blue-600 mr-2"></i>
+                                💼 Corporate Business Solutions
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Brand Identity & Creative Design -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="logo-design" data-price="1500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Logo Design - R1,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-palette text-sm"></i>
+                                            <span class="text-sm font-medium">Logo Design</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="business-cards" data-price="850">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Business Card Design & Printing (100 units) - R850" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-id-card text-sm"></i>
+                                            <span class="text-sm font-medium">Business Cards (100 units)</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R850</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="full-branding" data-price="4500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Full Branding & Visual Identity Package - R4,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-paint-brush text-sm"></i>
+                                            <span class="text-sm font-medium">Full Branding Package</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R4,500</span>
+                                    </div>
+                                </div>
+
+                                <!-- Business Documentation -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="company-profile" data-price="2800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Company Profile eBook - R2,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-book text-sm"></i>
+                                            <span class="text-sm font-medium">Company Profile eBook</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R2,800</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="business-plan" data-price="6500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Business Plan Development - R6,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-chart-line text-sm"></i>
+                                            <span class="text-sm font-medium">Business Plan Development</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R6,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="product-catalog" data-price="3200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Product & Services Catalog - R3,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-catalog text-sm"></i>
+                                            <span class="text-sm font-medium">Product & Services Catalog</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R3,200</span>
+                                    </div>
+                                </div>
+
+                                <!-- Legal & Compliance -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="bee-certificate" data-price="3500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="BEE Certificate Application Support - R3,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-certificate text-sm"></i>
+                                            <span class="text-sm font-medium">BEE Certificate Support</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R3,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="vat-registration" data-price="1800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="VAT Registration & Tax Compliance - R1,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-file-invoice text-sm"></i>
+                                            <span class="text-sm font-medium">VAT Registration & Tax Compliance</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,800</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="uif-registration" data-price="1200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="UIF Registration (Company & Employees) - R1,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-users-cog text-sm"></i>
+                                            <span class="text-sm font-medium">UIF Registration</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,200</span>
+                                    </div>
+                                </div>
+
+                                <!-- Business Operations -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="payroll-setup" data-price="2500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Payroll & HR System Setup - R2,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-calculator text-sm"></i>
+                                            <span class="text-sm font-medium">Payroll & HR System Setup</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R2,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="cybersecurity-training" data-price="1500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Cybersecurity Awareness Training - R1,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-shield-alt text-sm"></i>
+                                            <span class="text-sm font-medium">Cybersecurity Training</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="business-insurance" data-price="2200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Business Insurance Consulting - R2,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-umbrella text-sm"></i>
+                                            <span class="text-sm font-medium">Business Insurance Consulting</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R2,200</span>
+                                    </div>
+                                </div>
+
+                                <!-- Accounting and Financial Reporting -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="accounting-reporting" data-price="2800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Accounting and Financial Reporting (Monthly) - R2,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-file-invoice-dollar text-sm"></i>
+                                            <span class="text-sm font-medium">Accounting & Financial Reporting (Monthly)</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R2,800</span>
+                                    </div>
+                                </div>
+
+                                <!-- Accounting Software Setup -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="accounting-software" data-price="1800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Accounting Software Setup (Xero/QuickBooks/Sage) - R1,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-laptop-code text-sm"></i>
+                                            <span class="text-sm font-medium">Accounting Software Setup</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,800</span>
+                                    </div>
+                                </div>
+
+                                <!-- Business Banking Setup -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="business-banking" data-price="1200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Business Banking Setup & Account Opening - R1,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-university text-sm"></i>
+                                            <span class="text-sm font-medium">Business Banking Setup</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,200</span>
+                                    </div>
+                                </div>
+
+                                <!-- Development Website and Business Email -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="website-email-dev" data-price="3500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Development Website & Business Email Address - R3,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-code text-sm"></i>
+                                            <span class="text-sm font-medium">Development Website & Business Email</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R3,500</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SMMA & Digital Marketing Services -->
+                        <div class="mb-6">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-rocket text-purple-600 mr-2"></i>
+                                📲 SMMA & Digital Marketing Services
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Website Development -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="website-development" data-price="8500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Website Design & Development - R8,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-globe text-sm"></i>
+                                            <span class="text-sm font-medium">Website Design & Development</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R8,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="ecommerce-website" data-price="15000">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="eCommerce Website Development - R15,000" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-shopping-cart text-sm"></i>
+                                            <span class="text-sm font-medium">eCommerce Website</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R15,000</span>
+                                    </div>
+                                </div>
+
+                                <!-- Social Media & Content -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="social-media-setup" data-price="1800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Social Media Setup & Optimization - R1,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-users text-sm"></i>
+                                            <span class="text-sm font-medium">Social Media Setup</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,800</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="content-creation" data-price="3500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Content Creation & Copywriting (Monthly) - R3,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-pen text-sm"></i>
+                                            <span class="text-sm font-medium">Content Creation (Monthly)</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R3,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="video-content" data-price="4200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Reels & Video Content Creation (10 videos) - R4,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-video text-sm"></i>
+                                            <span class="text-sm font-medium">Video Content (10 videos)</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R4,200</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="photography" data-price="3800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Professional Photography Package - R3,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-camera text-sm"></i>
+                                            <span class="text-sm font-medium">Photography Package</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R3,800</span>
+                                    </div>
+                                </div>
+
+                                <!-- Digital Advertising -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="paid-advertising" data-price="5500">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Paid Social Media Advertising (Monthly Management) - R5,500" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-bullhorn text-sm"></i>
+                                            <span class="text-sm font-medium">Paid Advertising (Monthly)</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R5,500</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="google-ads" data-price="4800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Google Ads Management (Monthly) - R4,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fab fa-google text-sm"></i>
+                                            <span class="text-sm font-medium">Google Ads (Monthly)</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R4,800</span>
+                                    </div>
+                                </div>
+
+                                <!-- Marketing Automation -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="crm-integration" data-price="3200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="CRM Integration & Email Automation - R3,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-cogs text-sm"></i>
+                                            <span class="text-sm font-medium">CRM & Email Automation</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R3,200</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="chatbot-development" data-price="2800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Chatbot Development - R2,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-robot text-sm"></i>
+                                            <span class="text-sm font-medium">Chatbot Development</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R2,800</span>
+                                    </div>
+                                </div>
+
+                                <!-- Analytics & Reporting -->
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="analytics-dashboard" data-price="2200">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Advanced Analytics Dashboard Setup - R2,200" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-chart-bar text-sm"></i>
+                                            <span class="text-sm font-medium">Analytics Dashboard</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R2,200</span>
+                                    </div>
+                                </div>
+
+                                <div class="service-card p-4 border-2 border-gray-200 rounded-lg" data-id="monthly-reporting" data-price="1800">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" name="additionalServices" value="Monthly Reporting & Strategy Reviews - R1,800" class="rounded text-purple-600">
+                                        <div class="flex items-center space-x-2 flex-1">
+                                            <i class="fas fa-file-alt text-sm"></i>
+                                            <span class="text-sm font-medium">Monthly Reporting</span>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">R1,800</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Directors Section -->
+            <div class="bg-white rounded-lg shadow border-l-4 border-l-purple-500">
+                <div class="p-6 border-b">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="flex items-center">
+                                <h2 class="text-xl font-bold text-gray-900">Directors Information</h2>
+                                <span class="ml-2">👥</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">Add information for all company directors (minimum 1 required)</p>
+                        </div>
+                        <button type="button" id="addDirectorBtn" 
+                                class="bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 
+                                       px-4 py-2 rounded-md flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            Add Director 👨‍💼
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div id="directorsContainer">
+                        <div class="no-directors text-center py-8 text-gray-500">
+                            <i class="fas fa-building text-5xl text-gray-300 mb-4"></i>
+                            <p>No directors added yet. Click "Add Director" to get started! 🚀</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden fields for Netlify -->
+            <input type="hidden" name="totalQuotation" id="totalQuotationInput" value="R0">
+            <input type="hidden" name="submissionDate" id="submissionDateInput" value="">
+            <input type="hidden" name="numberOfDirectors" id="numberOfDirectorsInput" value="0">
+            <input type="hidden" name="directorsData" id="directorsDataInput" value="">
+
+            <!-- Submit Button -->
+            <div class="flex justify-center">
+                <button type="submit" 
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 
+                               text-white px-8 py-3 text-lg font-semibold rounded-md shadow-lg">
+                    Submit Registration 🚀✨
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Global variables
+        let directorCount = 0;
+        let formData = {
+            companyName: '',
+            companyType: '',
+            registrationNumber: '',
+            registeredAddress: '',
+            companyWebsite: '',
+            companyEmail: '',
+            companyPhone: '',
+            companyLogo: null,
+            needsLogo: false,
+            additionalServices: [],
+            directors: []
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWelcomeScreen();
+            initializeEventListeners();
+            initializeFireworks();
+            
+            // Set submission date
+            document.getElementById('submissionDateInput').value = new Date().toISOString();
+        });
+
+        // Welcome Screen Functions
+        function initializeWelcomeScreen() {
+            setTimeout(() => {
+                document.getElementById('welcomeScreen').style.display = 'none';
+                document.getElementById('mainContent').classList.remove('hidden');
+            }, 4000);
+        }
+
+        function initializeFireworks() {
+            const fireworksContainer = document.querySelector('.fireworks-container');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+            
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    createFirework(fireworksContainer, colors);
+                }, i * 300);
+            }
+            
+            // Continue creating fireworks during welcome screen
+            const fireworkInterval = setInterval(() => {
+                if (document.getElementById('welcomeScreen').style.display === 'none') {
+                    clearInterval(fireworkInterval);
+                    return;
+                }
+                createFirework(fireworksContainer, colors);
+            }, 800);
+        }
+
+        function createFirework(container, colors) {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = Math.random() * 100 + '%';
+            firework.style.top = Math.random() * 100 + '%';
+            firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Create sparks
+            for (let i = 0; i < 8; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                spark.style.setProperty('--i', i);
+                firework.appendChild(spark);
+            }
+            
+            container.appendChild(firework);
+            
+            setTimeout(() => {
+                if (container.contains(firework)) {
+                    container.removeChild(firework);
+                }
+            }, 2000);
+        }
+
+        // Event Listeners
+        function initializeEventListeners() {
+            // Form submission
+            document.getElementById('registrationForm').addEventListener('submit', handleFormSubmit);
+            
+            // Progress tracking
+            const formInputs = document.querySelectorAll('input[required], select[required]');
+            formInputs.forEach(input => {
+                input.addEventListener('input', updateProgress);
+                input.addEventListener('change', updateProgress);
+            });
+            
+            // Director management
+            document.getElementById('addDirectorBtn').addEventListener('click', addDirector);
+            
+            // Website helper
+            document.getElementById('websiteHelperBtn').addEventListener('click', toggleWebsiteHelper);
+            document.getElementById('closeWebsiteHelper').addEventListener('click', closeWebsiteHelper);
+            
+            // Additional services
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        checkbox.checked = !checkbox.checked;
+                        handleServiceChange({ target: checkbox });
+                    }
+                });
+                
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', handleServiceChange);
+            });
+            
+            // File uploads
+            document.getElementById('companyLogo').addEventListener('change', function(e) {
+                handleFileUpload(e.target);
+            });
+        }
+
+        // Progress Bar Functions
+        function updateProgress() {
+            const requiredFields = [
+                document.getElementById('companyName').value.trim(),
+                document.getElementById('companyType').value,
+                document.getElementById('registeredAddress').value.trim(),
+                document.getElementById('companyEmail').value.trim(),
+                document.getElementById('companyPhone').value.trim()
+            ];
+            
+            const filledRequiredFields = requiredFields.filter(field => field !== '').length;
+            const directorsProgress = formData.directors.length > 0 ? 20 : 0;
+            const baseProgress = (filledRequiredFields / requiredFields.length) * 80;
+            const totalProgress = Math.round(baseProgress + directorsProgress);
+            
+            document.querySelector('.progress-fill').style.width = totalProgress + '%';
+            document.querySelector('.progress-percentage').textContent = totalProgress + '%';
+        }
+
+        // Director Management Functions
+        function addDirector() {
+            directorCount++;
+            const director = {
+                id: Date.now().toString(),
+                firstName: '',
+                lastName: '',
+                idNumber: '',
+                email: '',
+                phone: '',
+                address: '',
+                idCopy: null,
+                proofOfResidence: null
+            };
+            
+            formData.directors.push(director);
+            renderDirectors();
+            updateProgress();
+            updateDirectorsData();
+        }
+
+        function removeDirector(directorId) {
+            formData.directors = formData.directors.filter(d => d.id !== directorId);
+            renderDirectors();
+            updateProgress();
+            updateDirectorsData();
+        }
+
+        function updateDirectorsData() {
+            // Update hidden fields for Netlify submission
+            document.getElementById('numberOfDirectorsInput').value = formData.directors.length;
+            document.getElementById('directorsDataInput').value = JSON.stringify(formData.directors.map(d => ({
+                firstName: d.firstName,
+                lastName: d.lastName,
+                idNumber: d.idNumber,
+                email: d.email,
+                phone: d.phone,
+                address: d.address
+            })));
+        }
+
+        function renderDirectors() {
+            const container = document.getElementById('directorsContainer');
+            
+            if (formData.directors.length === 0) {
+                container.innerHTML = `
+                    <div class="no-directors text-center py-8 text-gray-500">
+                        <i class="fas fa-building text-5xl text-gray-300 mb-4"></i>
+                        <p>No directors added yet. Click "Add Director" to get started! 🚀</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = formData.directors.map((director, index) => `
+                <div class="director-card border rounded-lg p-6 bg-gradient-to-r from-yellow-50 to-orange-50 mb-6" data-director-id="${director.id}">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            👨‍💼 Director ${index + 1}
+                        </h3>
+                        <button type="button" class="remove-director-btn text-red-600 border border-red-200 hover:bg-red-50 px-2 py-1 rounded-md" 
+                                onclick="removeDirector('${director.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">First Name *</label>
+                            <input type="text" name="director_${index + 1}_firstName" placeholder="Enter first name" 
+                                   value="${director.firstName}" 
+                                   onchange="updateDirectorField('${director.id}', 'firstName', this.value)" 
+                                   class="director-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Last Name *</label>
+                            <input type="text" name="director_${index + 1}_lastName" placeholder="Enter last name" 
+                                   value="${director.lastName}" 
+                                   onchange="updateDirectorField('${director.id}', 'lastName', this.value)" 
+                                   class="director-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">ID Number *</label>
+                            <input type="text" name="director_${index + 1}_idNumber" placeholder="Enter ID number" 
+                                   value="${director.idNumber}" 
+                                   onchange="updateDirectorField('${director.id}', 'idNumber', this.value)" 
+                                   class="director-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Email Address *</label>
+                            <input type="email" name="director_${index + 1}_email" placeholder="Enter email address" 
+                                   value="${director.email}" 
+                                   onchange="updateDirectorField('${director.id}', 'email', this.value)" 
+                                   class="director-field w-full px-3 py-2 border rounded-md" required>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <input type="tel" name="director_${index + 1}_phone" placeholder="Enter phone number" 
+                                   value="${director.phone}" 
+                                   onchange="updateDirectorField('${director.id}', 'phone', this.value)" 
+                                   class="director-field w-full px-3 py-2 border rounded-md">
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Residential Address</label>
+                            <input type="text" name="director_${index + 1}_address" placeholder="Enter residential address" 
+                                   value="${director.address}" 
+                                   onchange="updateDirectorField('${director.id}', 'address', this.value)" 
+                                   class="director-field w-full px-3 py-2 border rounded-md">
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <h4 class="text-md font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-file-text mr-2"></i>
+                            Required Documents 📄
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">ID Copy (certified &lt; 3 Months) *</label>
+                                <div class="upload-area director">
+                                    <input type="file" id="idCopy-${director.id}" name="director_${index + 1}_idCopy" 
+                                           accept=".pdf,.jpg,.jpeg,.png" 
+                                           onchange="handleDirectorFileUpload('${director.id}', 'idCopy', this)" class="hidden">
+                                    <label for="idCopy-${director.id}" class="cursor-pointer">
+                                        <i class="fas fa-upload text-3xl text-yellow-500 mb-2 block"></i>
+                                        <p class="text-xs text-gray-600 upload-text">
+                                            ${director.idCopy ? director.idCopy.name : 'Upload ID Copy'}
+                                        </p>
+                                        <p class="text-xs text-gray-400">PDF, JPG, PNG up to 5MB</p>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700">Proof of Residence *</label>
+                                <div class="upload-area director">
+                                    <input type="file" id="proofOfResidence-${director.id}" name="director_${index + 1}_proofOfResidence" 
+                                           accept=".pdf,.jpg,.jpeg,.png" 
+                                           onchange="handleDirectorFileUpload('${director.id}', 'proofOfResidence', this)" class="hidden">
+                                    <label for="proofOfResidence-${director.id}" class="cursor-pointer">
+                                        <i class="fas fa-upload text-3xl text-yellow-500 mb-2 block"></i>
+                                        <p class="text-xs text-gray-600 upload-text">
+                                            ${director.proofOfResidence ? director.proofOfResidence.name : 'Upload Proof of Residence'}
+                                        </p>
+                                        <p class="text-xs text-gray-400">PDF, JPG, PNG up to 5MB</p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateDirectorField(directorId, field, value) {
+            const director = formData.directors.find(d => d.id === directorId);
+            if (director) {
+                director[field] = value;
+                updateDirectorsData();
+            }
+        }
+
+        function handleDirectorFileUpload(directorId, field, input) {
+            const director = formData.directors.find(d => d.id === directorId);
+            if (director && input.files[0]) {
+                director[field] = {
+                    name: input.files[0].name,
+                    size: input.files[0].size,
+                    type: input.files[0].type
+                };
+                
+                // Update the display
+                const label = input.nextElementSibling.querySelector('.upload-text');
+                label.textContent = input.files[0].name;
+                
+                // Add success styling
+                input.parentElement.classList.add('file-uploaded');
+            }
+        }
+
+        // Additional Services Functions
+        function handleServiceChange(event) {
+            const serviceCard = event.target.closest('.service-card');
+            const serviceId = serviceCard.dataset.id;
+            const price = parseInt(serviceCard.dataset.price);
+            
+            if (event.target.checked) {
+                formData.additionalServices.push({ id: serviceId, price: price });
+                serviceCard.classList.add('selected');
+            } else {
+                formData.additionalServices = formData.additionalServices.filter(s => s.id !== serviceId);
+                serviceCard.classList.remove('selected');
+            }
+            
+            updateQuotation();
+        }
+
+        function updateQuotation() {
+            const total = formData.additionalServices.reduce((sum, service) => sum + service.price, 0);
+            const quotationCard = document.getElementById('quotationCard');
+            const quotationAmount = quotationCard.querySelector('.quotation-amount');
+            
+            if (total > 0) {
+                quotationCard.classList.remove('hidden');
+                quotationAmount.textContent = `R${total.toLocaleString()} 💰`;
+                document.getElementById('totalQuotationInput').value = `R${total.toLocaleString()}`;
+            } else {
+                quotationCard.classList.add('hidden');
+                document.getElementById('totalQuotationInput').value = 'R0';
+            }
+        }
+
+        // Website Helper Functions
+        function toggleWebsiteHelper() {
+            const helper = document.getElementById('websiteHelper');
+            helper.classList.toggle('hidden');
+        }
+
+        function closeWebsiteHelper() {
+            document.getElementById('websiteHelper').classList.add('hidden');
+        }
+
+        // File Upload Functions
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                formData.companyLogo = {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                };
+                
+                // Update display
+                const label = input.nextElementSibling;
+                const uploadText = label.querySelector('.upload-text');
+                uploadText.textContent = file.name;
+                
+                // Add success styling
+                input.parentElement.classList.add('file-uploaded');
+            }
+        }
+
+        // PDF Generation Functions
+        function generateQuotationPDF() {
+            return new Promise((resolve) => {
+                // Get form data
+                const companyName = document.getElementById('companyName').value;
+                const companyType = document.getElementById('companyType').value;
+                const companyEmail = document.getElementById('companyEmail').value;
+                const companyPhone = document.getElementById('companyPhone').value;
+                const companyAddress = document.getElementById('registeredAddress').value;
+                
+                // Get first director as contact person
+                const firstDirector = formData.directors[0];
+                const contactPerson = firstDirector ? `${firstDirector.firstName} ${firstDirector.lastName}` : 'Not specified';
+                const contactEmail = firstDirector ? firstDirector.email : companyEmail;
+                const contactPhone = firstDirector ? firstDirector.phone : companyPhone;
+                
+                // Calculate totals
+                const subtotal = formData.additionalServices.reduce((sum, service) => sum + service.price, 0);
+                const vatAmount = subtotal * 0.15;
+                const total = subtotal + vatAmount;
+                
+                // Generate quote number and date
+                const quoteNumber = 'QT-' + Date.now().toString().slice(-6);
+                const currentDate = new Date().toLocaleDateString('en-ZA');
+                
+                // Populate the hidden template
+                document.getElementById('quotationDate').textContent = currentDate;
+                document.getElementById('quotationNumber').textContent = quoteNumber;
+                
+                // Client details
+                const clientDetails = document.getElementById('clientDetails');
+                clientDetails.innerHTML = `
+                    <strong>${companyName}</strong><br>
+                    ${companyType}<br>
+                    ${companyAddress}<br>
+                    📧 ${companyEmail}<br>
+                    📱 ${companyPhone}
+                `;
+                
+                // Contact details
+                const contactDetails = document.getElementById('contactDetails');
+                contactDetails.innerHTML = `
+                    <strong>${contactPerson}</strong><br>
+                    📧 ${contactEmail}<br>
+                    📱 ${contactPhone}
+                `;
+                
+                // Services table
+                const servicesTable = document.getElementById('servicesTable');
+                let servicesHTML = '';
+                
+                if (formData.additionalServices.length === 0) {
+                    servicesHTML = `
+                        <tr>
+                            <td style="border: 1px solid #D1D5DB; padding: 12px; color: #6B7280; font-style: italic;" colspan="2">
+                                No additional services selected
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    formData.additionalServices.forEach(service => {
+                        const serviceCard = document.querySelector(`[data-id="${service.id}"]`);
+                        const serviceName = serviceCard ? serviceCard.querySelector('.text-sm.font-medium').textContent : 'Service';
+                        
+                        servicesHTML += `
+                            <tr>
+                                <td style="border: 1px solid #D1D5DB; padding: 12px; color: #374151;">${serviceName}</td>
+                                <td style="border: 1px solid #D1D5DB; padding: 12px; text-align: right; color: #374151;">R${service.price.toLocaleString()}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                servicesTable.innerHTML = servicesHTML;
+                
+                // Update totals
+                document.getElementById('subtotalAmount').textContent = `R${subtotal.toLocaleString()}`;
+                document.getElementById('vatAmount').textContent = `R${vatAmount.toLocaleString()}`;
+                document.getElementById('totalAmount').textContent = `R${total.toLocaleString()}`;
+                
+                // Generate PDF
+                const element = document.getElementById('quotationTemplate');
+                
+                // Temporarily show the element for rendering
+                element.style.position = 'fixed';
+                element.style.left = '0';
+                element.style.top = '0';
+                element.style.zIndex = '-1';
+                
+                html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    // Hide the element again
+                    element.style.position = 'absolute';
+                    element.style.left = '-9999px';
+                    element.style.top = '-9999px';
+                    element.style.zIndex = 'auto';
+                    
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 210;
+                    const pageHeight = 295;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let heightLeft = imgHeight;
+                    
+                    let position = 0;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                    
+                    // Generate filename
+                    const filename = `Quotation_${companyName.replace(/[^a-zA-Z0-9]/g, '_')}_${quoteNumber}.pdf`;
+                    
+                    // Download the PDF
+                    pdf.save(filename);
+                    
+                    resolve();
+                });
+            });
+        }
+
+        // Form Submission
+        async function handleFormSubmit(event) {
+            // Validation
+            if (!validateForm()) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Show loading notification
+            showNotification(
+                'Generating Quotation... 📄',
+                'Creating your professional quotation PDF...',
+                'success'
+            );
+            
+            try {
+                // Generate and download PDF first
+                await generateQuotationPDF();
+                
+                // Update hidden fields before submission
+                updateDirectorsData();
+                document.getElementById('submissionDateInput').value = new Date().toISOString();
+                
+                // Show success notification
+                showNotification(
+                    'Quotation Downloaded! 🎉',
+                    'Your quotation has been downloaded. Form submission in progress...',
+                    'success'
+                );
+                
+                // Form will continue to submit to Netlify
+                // Don't prevent default - let the form submit naturally
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showNotification(
+                    'PDF Generation Error',
+                    'There was an issue generating the PDF, but your form will still be submitted.',
+                    'error'
+                );
+                
+                // Continue with form submission even if PDF fails
+            }
+        }
+
+        function validateForm() {
+            // Check required company fields
+            if (!document.getElementById('companyName').value || 
+                !document.getElementById('companyType').value || 
+                !document.getElementById('registeredAddress').value || 
+                !document.getElementById('companyEmail').value || 
+                !document.getElementById('companyPhone').value) {
+                showNotification(
+                    'Validation Error',
+                    'Please fill in all required company information fields.',
+                    'error'
+                );
+                return false;
+            }
+            
+            // Check directors
+            if (formData.directors.length === 0) {
+                showNotification(
+                    'Validation Error',
+                    'At least one director is required for company registration.',
+                    'error'
+                );
+                return false;
+            }
+            
+            // Check director completeness
+            const incompleteDirectors = formData.directors.some(director => 
+                !director.firstName || !director.lastName || !director.idNumber || !director.email
+            );
+            
+            if (incompleteDirectors) {
+                showNotification(
+                    'Validation Error',
+                    'Please complete all director information fields.',
+                    'error'
+                );
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Notification System
+        function showNotification(title, message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
